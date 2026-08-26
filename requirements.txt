@@ -1,0 +1,12 @@
+﻿fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+streamlit==1.38.0
+requests==2.32.3
+litellm==1.48.0
+pinecone
+google-adk
+google-genai
+fakeredis
+langgraph

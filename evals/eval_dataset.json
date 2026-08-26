@@ -1,0 +1,12 @@
+﻿[
+  {"question": "What are the MFA requirements?", "expect_source": "access_control_policy.md"},
+  {"question": "How quickly must a breach be reported to regulators?", "expect_source": "incident_response_policy.md"},
+  {"question": "What is the company vacation policy?", "expect_source": null},
+  {"question": "How often must vendor risk be reassessed?", "expect_source": "vendor_security_policy.md"},
+  {"question": "What is the data retention requirement?", "expect_source": "data_protection_policy.md"},
+  {"question": "How soon must access be revoked after termination?", "expect_source": "access_control_policy.md"},
+  {"question": "What encryption standard is required at rest?", "expect_source": "information_security_policy.md"},
+  {"question": "How often is the security policy reviewed?", "expect_source": "information_security_policy.md"},
+  {"question": "What is the company's parking policy?", "expect_source": null},
+  {"question": "How soon must incidents be reported to the security team?", "expect_source": "incident_response_policy.md"}
+]
