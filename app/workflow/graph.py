@@ -1,4 +1,4 @@
-﻿"""
+"""
 Compliance case workflow - explicit state machine via LangGraph.
 
 Flow: RETRIEVE -> ANALYZE -> CRITIQUE -> FINALIZE
@@ -17,7 +17,7 @@ from langgraph.graph import StateGraph, END
 
 from app.agents.analysis_agent import analyze_evidence
 from app.agents.critic_agent import critique_analysis
-from app.agents.evidence_agent import get_evidence
+import requests
 
 
 class CaseState(TypedDict):
@@ -29,7 +29,7 @@ class CaseState(TypedDict):
 
 
 def retrieve_node(state: CaseState) -> dict:
-    evidence = get_evidence(state["question"])
+    evidence = requests.post("http://localhost:8001/a2a/evidence", json={"question": state["question"]}, timeout=30).json()["evidence"]
     return {"evidence": evidence}
 
 

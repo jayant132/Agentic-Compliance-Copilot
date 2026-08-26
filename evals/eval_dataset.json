@@ -1,4 +1,4 @@
-﻿[
+[
   {"question": "What are the MFA requirements?", "expect_source": "access_control_policy.md"},
   {"question": "How quickly must a breach be reported to regulators?", "expect_source": "incident_response_policy.md"},
   {"question": "What is the company vacation policy?", "expect_source": null},
@@ -8,5 +8,15 @@
   {"question": "What encryption standard is required at rest?", "expect_source": "information_security_policy.md"},
   {"question": "How often is the security policy reviewed?", "expect_source": "information_security_policy.md"},
   {"question": "What is the company's parking policy?", "expect_source": null},
-  {"question": "How soon must incidents be reported to the security team?", "expect_source": "incident_response_policy.md"}
+  {"question": "How soon must incidents be reported to the security team?", "expect_source": "incident_response_policy.md"},
+  {"question": "What is the least privilege principle?", "expect_source": "access_control_policy.md"},
+  {"question": "What is required before onboarding a new vendor?", "expect_source": "vendor_security_policy.md"},
+  {"question": "What is the data minimization requirement?", "expect_source": "data_protection_policy.md"},
+  {"question": "How long does the company have to fulfill a data subject access request?", "expect_source": "data_protection_policy.md"},
+  {"question": "What is the company's remote work policy?", "expect_source": null},
+  {"question": "Is security awareness training mandatory?", "expect_source": "information_security_policy.md"},
+  {"question": "What must vendor contracts include?", "expect_source": "vendor_security_policy.md"},
+  {"question": "How often is the incident response plan tested?", "expect_source": "incident_response_policy.md"},
+  {"question": "What is the company's expense reimbursement policy?", "expect_source": null},
+  {"question": "What must happen after a security incident is closed?", "expect_source": "incident_response_policy.md"}
 ]
