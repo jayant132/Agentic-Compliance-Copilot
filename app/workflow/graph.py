@@ -1,4 +1,4 @@
-"""
+﻿"""
 Compliance case workflow - explicit state machine via LangGraph.
 
 Flow: RETRIEVE -> ANALYZE -> CRITIQUE -> FINALIZE
@@ -9,18 +9,23 @@ But Phase 4 adds a real branch (CRITIQUE can loop back to ANALYZE on
 UNSUPPORTED) and a real pause (HUMAN_APPROVAL waits for an external
 API call before FINALIZE runs). LangGraph gives us that branching /
 pausing/resuming machinery for free - plain Python control flow does not.
+
+Phase 5 adds timing/logging around every node via timed_step, so we can
+report real latency numbers instead of estimates.
 """
 
 from typing import TypedDict
 
 from langgraph.graph import StateGraph, END
+import requests
 
 from app.agents.analysis_agent import analyze_evidence
 from app.agents.critic_agent import critique_analysis
-import requests
+from app.workflow.observability import timed_step
 
 
 class CaseState(TypedDict):
+    case_id: str
     question: str
     evidence: str
     findings: str
@@ -29,25 +34,29 @@ class CaseState(TypedDict):
 
 
 def retrieve_node(state: CaseState) -> dict:
-    evidence = requests.post("http://localhost:8001/a2a/evidence", json={"question": state["question"]}, timeout=30).json()["evidence"]
+    with timed_step(state["case_id"], "RETRIEVE"):
+        evidence = requests.post(
+            "http://localhost:8001/a2a/evidence",
+            json={"question": state["question"]}, timeout=30,
+        ).json()["evidence"]
     return {"evidence": evidence}
 
 
 def analyze_node(state: CaseState) -> dict:
-    findings = analyze_evidence(state["question"], state["evidence"])
+    with timed_step(state["case_id"], "ANALYZE"):
+        findings = analyze_evidence(state["question"], state["evidence"])
     return {"findings": findings}
 
 
 def critique_node(state: CaseState) -> dict:
-    critique = critique_analysis(state["evidence"], state["findings"])
+    with timed_step(state["case_id"], "CRITIQUE"):
+        critique = critique_analysis(state["evidence"], state["findings"])
     return {"critique": critique}
 
 
 def finalize_node(state: CaseState) -> dict:
-    result = (
-        f"FINDINGS:\n{state['findings']}\n\n"
-        f"REVIEW:\n{state['critique']}"
-    )
+    with timed_step(state["case_id"], "FINALIZE"):
+        result = f"FINDINGS:\n{state['findings']}\n\nREVIEW:\n{state['critique']}"
     return {"final_result": result}
 
 
@@ -70,6 +79,8 @@ def build_graph():
 compliance_graph = build_graph()
 
 
-def run_compliance_case(question: str) -> dict:
+def run_compliance_case(question: str, case_id: str = "unscoped") -> dict:
     """Public entrypoint - runs the full graph for one question."""
-    return compliance_graph.invoke({"question": question})
+    with timed_step(case_id, "TOTAL"):
+        result = compliance_graph.invoke({"case_id": case_id, "question": question})
+    return result

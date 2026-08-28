@@ -12,6 +12,8 @@ import asyncio
 
 import litellm
 litellm.drop_params = True
+litellm.num_retries = 3
+litellm.retry_after = 8
 
 from google.adk.runners import InMemoryRunner
 from google.genai import types

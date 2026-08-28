@@ -1,6 +1,5 @@
 ﻿"""
 Document ingestion pipeline: chunk -> embed -> upsert into Pinecone.
-
 Run standalone with: python -m app.rag.ingest
 """
 
@@ -15,18 +14,31 @@ from app.config import settings
 EMBED_MODEL = "multilingual-e5-large"
 EMBED_DIM = 1024
 
+# Cached at module load, not per call. Originally get_pinecone_index()
+# created a new Pinecone client and called list_indexes() on every
+# single retrieval - a full network round-trip just to check an index
+# that already exists. Measured impact: this accounted for most of the
+# ~9s average RETRIEVE latency seen in evals/run_eval_extended.py.
+_pc = None
+_index = None
+
 
 def get_pinecone_index():
-    pc = Pinecone(api_key=settings.pinecone_api_key)
-    existing = [i["name"] for i in pc.list_indexes()]
+    global _pc, _index
+    if _pc is not None and _index is not None:
+        return _pc, _index
+
+    _pc = Pinecone(api_key=settings.pinecone_api_key)
+    existing = [i["name"] for i in _pc.list_indexes()]
     if settings.pinecone_index_name not in existing:
-        pc.create_index(
+        _pc.create_index(
             name=settings.pinecone_index_name,
             dimension=EMBED_DIM,
             metric="cosine",
             spec=ServerlessSpec(cloud="aws", region="us-east-1"),
         )
-    return pc, pc.Index(settings.pinecone_index_name)
+    _index = _pc.Index(settings.pinecone_index_name)
+    return _pc, _index
 
 
 def chunk_by_sections(text: str) -> list[str]:

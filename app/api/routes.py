@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.agents.orchestrator import ask_compliance_question
@@ -31,7 +31,7 @@ class CaseRequest(BaseModel):
 @router.post("/cases")
 def submit_case(request: CaseRequest) -> dict:
     case_id = create_case(request.question)
-    result = run_compliance_case(request.question)
+    result = run_compliance_case(request.question, case_id=case_id)
 
     grounded, reason = check_grounding(result["evidence"], result["findings"])
     if not grounded:
